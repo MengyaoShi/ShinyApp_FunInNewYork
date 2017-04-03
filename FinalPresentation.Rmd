@@ -1,0 +1,72 @@
+---
+title: "Fun in New York"
+author: "Mengyao Shi"
+date: "April 2, 2017"
+output: ioslides_presentation
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(leaflet)
+library(shiny)
+library(jsonlite)
+```
+
+## My App introduction
+
+This app is inspired by my recent trip to new york, and it hep people who wants to go to New York city who wants to see main attractions with location, citi-bikes around him or her, official website link.
+
+
+
+## It's based on An interactive map...
+```{r}
+
+AttractionIcon<- makeIcon(
+  iconUrl = 'http://www.clker.com/cliparts/9/A/I/s/M/X/heart-fund-logo.svg',
+  iconWidth = 60, iconHeight = 60,
+  iconAnchorX = 30, iconAnchorY = 30
+  
+)
+NewYorkAttract <- data.frame(
+  lat = c(40.6892494,40.7829045,40.758895,40.7794376,40.7614342),
+  lng = c(-74.0466891,-73.9589513,-73.9873197,-73.9633131,-73.9776524)
+  )
+
+NewYorkAttractSites <- c(
+  "<a href='https://www.nps.gov/stli/index.htm'>Statue of Liberty</a>",
+  "<a href='https://www.guggenheim.org/'>Guggenheim</a>",
+  "<a href='http://www.timessquarenyc.org/index.aspx'>Time Square</a>",
+  "<a href='http://www.metmuseum.org/'>The Metropolitan Museum of Art</a>",
+  "<a href='https://www.moma.org/'>The Museum of Modern Art</a>"
+)
+
+citibike <- fromJSON("http://citibikenyc.com/stations/json")
+NewYorkBikes<-data.frame(
+  lat<-citibike$stationBeanList$latitude,
+  lng<-citibike$stationBeanList$longitude
+)
+colnames(NewYorkBikes)[which(names(NewYorkBikes)=="lat....citibike.stationBeanList.latitude")]<-"lat"
+colnames(NewYorkBikes)[which(names(NewYorkBikes)=="lng....citibike.stationBeanList.longitude")]<-"lng"
+
+
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(data=NewYorkAttract, clusterOptions = markerClusterOptions(),popup = NewYorkAttractSites, group="Attractions", icon=AttractionIcon) %>%
+  addCircles(data=NewYorkAttract, weight=1,radius=1000 )%>%
+  addMarkers(data=NewYorkBikes, clusterOptions=markerClusterOptions(), group="Bikes")
+```
+
+## And a user interface including these functions
+
+- User can select an attraction, and there will be a blue circle guiding your eyes where this attraction is. On the right panel, above map, you can see corresponding text change.
+- User can change the size of blue circle to guide their eyes of nearest citi-bikes.
+- Interactive map user can zoom in and out
+- By clicking on "red heart" and then link on the popup, it guides you to official website
+
+
+
+## Thank you and Enjoy using this app
+
+
+
